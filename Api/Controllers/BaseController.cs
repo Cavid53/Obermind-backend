@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 
-namespace Api.Controllers.v1
+namespace Api.Controllers
 {
     [ApiController]
     [Route("v{ver:apiVersion}/[controller]")]
