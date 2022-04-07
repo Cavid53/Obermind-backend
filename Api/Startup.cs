@@ -1,4 +1,5 @@
 using Api.Injections;
+using Domain;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -20,6 +21,8 @@ namespace Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDatabaseDeveloperPageExceptionFilter();
+
+            services.AddDomain(Configuration);
 
             services.AddRouting(options => options.LowercaseUrls = true);
 
