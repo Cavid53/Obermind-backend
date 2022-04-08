@@ -41,6 +41,7 @@ namespace Service.Account
             {
                 var user = _mapper.Map<UserSignUpResource, AppUser>(userSignUpResource);
                 var userCreateResult = await _userManager.CreateAsync(user, userSignUpResource.Password);
+
                 if (userCreateResult.Succeeded)
                 {
                     _response.Success = true;

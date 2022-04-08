@@ -36,8 +36,6 @@ namespace Api.Controllers.v1
 
         [Authorize(Roles ="Admin")]
         [HttpPost]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Route("CreateRole")]
         public async Task<IActionResult> CreateRole([FromBody][Required] string[] roleNames)
         {
@@ -45,7 +43,7 @@ namespace Api.Controllers.v1
             return Ok(response);
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [Route("AddUserToRole")]
         public async Task<IActionResult> AddUserToRole(string userEmail, string roleName)
