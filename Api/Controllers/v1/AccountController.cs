@@ -42,7 +42,7 @@ namespace Api.Controllers.v1
 
         [HttpPost]
         [Route("AddUserToRole")]
-        public async Task<IActionResult> AddUserToRole(string userEmail, [FromBody] string roleName)
+        public async Task<IActionResult> AddUserToRole(string userEmail, string roleName)
         {
             ServiceResponse<string> response = await _accountService.AddUserToRoleAsync(userEmail, roleName);
             return Ok(response);

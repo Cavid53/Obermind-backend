@@ -139,7 +139,7 @@ namespace Service.Account
                 }
 
                 _response.Success = false;
-                _response.Message = $"{roleName} - alreadyy exist";
+                _response.Message = $"{roleName} - does not exist";
                 return _response;
             }
             catch (Exception ex)
