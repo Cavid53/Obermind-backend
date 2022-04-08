@@ -1,4 +1,6 @@
 ﻿using Domain.Common;
+using Domain.Entities;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using System;
@@ -7,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Domain
 {
-    public class AppDbContext : DbContext, IAppDbContext
+    public class AppDbContext : IdentityDbContext<AppUser>, IAppDbContext
     {
         public AppDbContext(DbContextOptions options) : base(options)
         {
@@ -51,6 +53,7 @@ namespace Domain
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
         }
     }

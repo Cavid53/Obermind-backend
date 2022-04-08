@@ -1,4 +1,6 @@
 ﻿using Domain.Common;
+using Domain.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,6 +11,10 @@ namespace Domain
     {
         public static IServiceCollection AddDomain(this IServiceCollection services, IConfiguration configuration)
         {
+            services.AddIdentity<AppUser, IdentityRole>()
+                .AddEntityFrameworkStores<AppDbContext>()
+                .AddDefaultTokenProviders();
+
             services.AddDbContext<AppDbContext>(opt =>
             {
                 opt.UseSqlServer(

@@ -21,6 +21,7 @@ namespace Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDatabaseDeveloperPageExceptionFilter();
+   
 
             services.AddDomain(Configuration);
 
@@ -46,6 +47,9 @@ namespace Api
 
             app.UseHttpsRedirection();
             app.UseRouting();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
