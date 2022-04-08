@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Domain.Entities;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Service.Account;
 using Service.Common;
-using System;
-using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -31,6 +32,14 @@ namespace Api.Controllers.v1
         {
             ServiceResponse response = await _accountService.LoginAsync(userSignInResource);
 
+            return Ok(response);
+        }
+
+        [HttpPost]
+        [Route("CreateRole")]
+        public async Task<IActionResult> CreateRole([FromBody][Required] string[] roleNames)
+        {
+            ServiceResponse response = await _accountService.CreateRoleAsync(roleNames);
             return Ok(response);
         }
     }

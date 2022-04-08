@@ -7,5 +7,6 @@ namespace Service.Account
     {
         Task<ServiceResponse> ResgisterAsync(UserSignUpResource userSignUpResource);
         Task<ServiceResponse> LoginAsync(UserSignInResource userSignInResource);
+        Task<ServiceResponse> CreateRoleAsync(string[] roles);
     }
 }
