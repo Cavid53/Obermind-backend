@@ -5,8 +5,9 @@ namespace Service.Account
 {
     public interface IAccountService
     {
-        Task<ServiceResponse> ResgisterAsync(UserSignUpResource userSignUpResource);
-        Task<ServiceResponse> LoginAsync(UserSignInResource userSignInResource);
-        Task<ServiceResponse> CreateRoleAsync(string[] roles);
+        Task<ServiceResponse<string>> ResgisterAsync(UserSignUpResource userSignUpResource);
+        Task<ServiceResponse<string>> LoginAsync(UserSignInResource userSignInResource);
+        Task<ServiceResponse<string>> CreateRoleAsync(string[] roles);
+        Task<ServiceResponse<string>> AddUserToRoleAsync(string userEmail, string roleName);
     }
 }

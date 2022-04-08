@@ -2,10 +2,15 @@
 using Domain.Common;
 using Domain.Entities;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Service.Common;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Service.Account
@@ -14,17 +19,23 @@ namespace Service.Account
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly JwtSettings _jwtSettings;
         private readonly IMapper _mapper;
 
-        public AccountService(IMapper mapper, UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager)
+        public AccountService(IMapper mapper, 
+                              UserManager<AppUser> userManager,
+                              RoleManager<IdentityRole> roleManager,
+                              IOptionsSnapshot<JwtSettings> jwtSettings)
         {
             _mapper = mapper;
             _userManager = userManager;
             _roleManager = roleManager;
+            _jwtSettings = jwtSettings.Value;
+
         }
-        public async Task<ServiceResponse> ResgisterAsync(UserSignUpResource userSignUpResource)
+        public async Task<ServiceResponse<string>> ResgisterAsync(UserSignUpResource userSignUpResource)
         {
-            ServiceResponse _response = new();
+            ServiceResponse<string> _response = new();
 
             try
             {
@@ -52,9 +63,9 @@ namespace Service.Account
             return _response;
         }
 
-        public async Task<ServiceResponse> LoginAsync(UserSignInResource userSignInResource)
+        public async Task<ServiceResponse<string>> LoginAsync(UserSignInResource userSignInResource)
         {
-            ServiceResponse _response = new();
+            ServiceResponse<string> _response = new();
 
             try
             {
@@ -71,8 +82,10 @@ namespace Service.Account
 
                 if (userSigninResult)
                 {
+                    var roles = await _userManager.GetRolesAsync(user);
                     _response.Success = true;
                     _response.Message = "Successfully login";
+                    _response.Data = GenerateJwt(user, roles);
                     return _response;
                 }
 
@@ -92,9 +105,9 @@ namespace Service.Account
 
         }
 
-        public async Task<ServiceResponse> CreateRoleAsync(string[] roles)
+        public async Task<ServiceResponse<string>> CreateRoleAsync(string[] roles)
         {
-            ServiceResponse _response = new();
+            ServiceResponse<string> _response = new();
             foreach (var role in roles)
             {
                 if(!await _roleManager.RoleExistsAsync(role.ToString()))
@@ -107,6 +120,65 @@ namespace Service.Account
                 }
             }
             return _response;
+        }
+
+        public async Task<ServiceResponse<string>> AddUserToRoleAsync(string userEmail, string roleName)
+        {
+            ServiceResponse<string> _response = new();
+            try
+            {
+                var user = _userManager.Users.SingleOrDefault(u => u.UserName == userEmail);
+                var result = await _userManager.AddToRoleAsync(user, roleName);
+
+                if (result.Succeeded)
+                {
+                    var roles = await _userManager.GetRolesAsync(user);
+                    _response.Success = true;
+                    _response.Message = "Successfully added";
+                    return _response;
+                }
+
+                _response.Success = false;
+                _response.Message = $"{roleName} - alreadyy exist";
+                return _response;
+            }
+            catch (Exception ex)
+            {
+                _response.Success = false;
+                _response.Message = "Error";
+                _response.ErrorMessages = new List<string> { Convert.ToString(ex.Message) };
+            }
+
+            return _response;
+
+        }
+
+        private string GenerateJwt(AppUser user, IList<string> roles)
+        {
+            var claims = new List<Claim>
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+                new Claim(ClaimTypes.Name, user.UserName),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
+            };
+
+            var roleClaims = roles.Select(r => new Claim(ClaimTypes.Role, r));
+            claims.AddRange(roleClaims);
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Secret));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var expires = DateTime.Now.AddDays(Convert.ToDouble(_jwtSettings.ExpirationInDays));
+
+            var token = new JwtSecurityToken(
+                issuer: _jwtSettings.Issuer,
+                audience: _jwtSettings.Issuer,
+                claims,
+                expires: expires,
+                signingCredentials: creds
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
 }

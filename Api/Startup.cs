@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Service;
+using Service.Account;
 
 namespace Api
 {
@@ -26,6 +27,8 @@ namespace Api
 
             services.AddDomainLayer(Configuration);
             services.AddServiceLayer();
+
+            services.Configure<JwtSettings>(Configuration.GetSection("Jwt"));
 
             services.AddRouting(options => options.LowercaseUrls = true);
 

@@ -1,10 +1,7 @@
-﻿using Domain.Entities;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Service.Account;
 using Service.Common;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Api.Controllers.v1
@@ -21,7 +18,7 @@ namespace Api.Controllers.v1
         [Route("Register")]
         public async Task<IActionResult> SignUp([FromBody] UserSignUpResource userSignUpResource)
         {
-            ServiceResponse response = await _accountService.ResgisterAsync(userSignUpResource);
+            ServiceResponse<string> response = await _accountService.ResgisterAsync(userSignUpResource);
 
             return Ok(response);
         }
@@ -30,7 +27,7 @@ namespace Api.Controllers.v1
         [Route("Login")]
         public async Task<IActionResult> SignIn([FromBody] UserSignInResource userSignInResource)
         {
-            ServiceResponse response = await _accountService.LoginAsync(userSignInResource);
+            ServiceResponse<string> response = await _accountService.LoginAsync(userSignInResource);
 
             return Ok(response);
         }
@@ -39,7 +36,15 @@ namespace Api.Controllers.v1
         [Route("CreateRole")]
         public async Task<IActionResult> CreateRole([FromBody][Required] string[] roleNames)
         {
-            ServiceResponse response = await _accountService.CreateRoleAsync(roleNames);
+            ServiceResponse<string> response = await _accountService.CreateRoleAsync(roleNames);
+            return Ok(response);
+        }
+
+        [HttpPost]
+        [Route("AddUserToRole")]
+        public async Task<IActionResult> AddUserToRole(string userEmail, [FromBody] string roleName)
+        {
+            ServiceResponse<string> response = await _accountService.AddUserToRoleAsync(userEmail, roleName);
             return Ok(response);
         }
     }
