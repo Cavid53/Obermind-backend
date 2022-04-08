@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Service.Account;
 using Service.Common;
 using System.ComponentModel.DataAnnotations;
@@ -32,7 +34,10 @@ namespace Api.Controllers.v1
             return Ok(response);
         }
 
+        [Authorize(Roles ="Admin")]
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Route("CreateRole")]
         public async Task<IActionResult> CreateRole([FromBody][Required] string[] roleNames)
         {
@@ -40,6 +45,7 @@ namespace Api.Controllers.v1
             return Ok(response);
         }
 
+        [Authorize]
         [HttpPost]
         [Route("AddUserToRole")]
         public async Task<IActionResult> AddUserToRole(string userEmail, string roleName)
