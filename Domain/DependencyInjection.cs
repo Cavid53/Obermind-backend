@@ -9,7 +9,7 @@ namespace Domain
 {
     public static class DependencyInjection
     {
-        public static IServiceCollection AddDomain(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddDomainLayer(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddIdentity<AppUser, IdentityRole>()
                 .AddEntityFrameworkStores<AppDbContext>()
