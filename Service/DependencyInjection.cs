@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Service.Account;
+using Service.OrderItems;
+using Service.Orders;
 using System.Reflection;
 
 namespace Service
@@ -11,6 +13,8 @@ namespace Service
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
             services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<IOrderService, OrderService>();
+            services.AddScoped<IOrderItemService, OrderItemService>();
 
             return services;
         }

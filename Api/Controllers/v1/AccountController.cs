@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 
 namespace Api.Controllers.v1
 {
+    [ApiVersion("1.0")]
+    [Authorize(Roles = "Admin")]
     public class AccountController : BaseController
     {
         private readonly IAccountService _accountService;
@@ -15,6 +17,7 @@ namespace Api.Controllers.v1
             _accountService = accountService;
         }
 
+        [AllowAnonymous]
         [HttpPost]
         [Route("Register")]
         public async Task<IActionResult> SignUp([FromBody] UserSignUpResource userSignUpResource)
@@ -24,6 +27,7 @@ namespace Api.Controllers.v1
             return Ok(response);
         }
 
+        [AllowAnonymous]
         [HttpPost]
         [Route("Login")]
         public async Task<IActionResult> SignIn([FromBody] UserSignInResource userSignInResource)
@@ -33,7 +37,7 @@ namespace Api.Controllers.v1
             return Ok(response);
         }
 
-        [Authorize(Roles ="Admin")]
+    
         [HttpPost]
         [Route("CreateRole")]
         public async Task<IActionResult> CreateRole([FromBody][Required] string[] roleNames)
@@ -42,7 +46,6 @@ namespace Api.Controllers.v1
             return Ok(response);
         }
 
-        [Authorize(Roles = "Admin")]
         [HttpPost]
         [Route("AddUserToRole")]
         public async Task<IActionResult> AddUserToRole(string userEmail, string roleName)
