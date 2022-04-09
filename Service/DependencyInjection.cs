@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Domain.Common;
+using Microsoft.Extensions.DependencyInjection;
 using Service.Account;
 using Service.OrderItems;
 using Service.Orders;
@@ -13,6 +14,8 @@ namespace Service
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
             services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<ICurrentUserService, CurrentUserService>();
+            services.AddScoped<IOrderItemService, OrderItemService>();
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<IOrderItemService, OrderItemService>();
 

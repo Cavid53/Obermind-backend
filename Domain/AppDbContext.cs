@@ -11,8 +11,14 @@ namespace Domain
 {
     public class AppDbContext : IdentityDbContext<AppUser>, IAppDbContext
     {
+        private readonly ICurrentUserService _currentUserService;
         public AppDbContext(DbContextOptions options) : base(options)
         {
+        }
+
+        public AppDbContext(DbContextOptions options, ICurrentUserService currentUserService) : base(options)
+        {
+            _currentUserService = currentUserService;
         }
 
         public DatabaseFacade GetDatabase()
@@ -29,20 +35,21 @@ namespace Domain
         {
             foreach (var entry in ChangeTracker.Entries<AuditingEntity>())
             {
+                var userId = _currentUserService.UserId;
                 var utcNow = DateTime.UtcNow;
 
                 switch (entry.State)
                 {
                     case EntityState.Added:
-                        entry.Entity.CreatedBy = 0;
+                        entry.Entity.CreatedBy = userId;
                         entry.Entity.CreatedAt = utcNow;
-                        entry.Entity.LastModifiedBy = 0;
+                        entry.Entity.LastModifiedBy = userId;
                         entry.Entity.LastModifiedAt = utcNow;
                         break;
                     case EntityState.Modified:
                         entry.Property(e => e.CreatedBy).IsModified = false;
                         entry.Property(e => e.CreatedAt).IsModified = false;
-                        entry.Entity.LastModifiedBy = 0;
+                        entry.Entity.LastModifiedBy = userId;
                         entry.Entity.LastModifiedAt = utcNow;
                         break;
                 }
