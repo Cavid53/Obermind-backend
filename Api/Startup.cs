@@ -23,6 +23,8 @@ namespace Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
+          
             var jwtSettings = Configuration.GetSection("Jwt").Get<JwtSettings>();
 
             services.AddDatabaseDeveloperPageExceptionFilter();
@@ -42,11 +44,20 @@ namespace Api
             services.AddApiVersion();
 
             services.AddAuth(jwtSettings);
+            services.AddCors();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseCors(options =>
+            {
+                options.WithOrigins("https://localhost:44374")
+                       .AllowAnyMethod()
+                       .AllowAnyHeader();
+            });
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

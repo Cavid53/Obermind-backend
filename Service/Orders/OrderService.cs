@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Domain.Common;
 using Domain.Entities;
+using Domain.Enums;
 using Service.Common;
 using Service.Common.Exceptions;
 using System.Linq;
@@ -11,6 +12,7 @@ namespace Service.Orders
     public interface IOrderService : ICrudService<OrderResource>
     {
         Task DeleteOrder(int id);
+        Task OrderSubmit(int id);
     }
 
     public class OrderService : CrudService<OrderResource, Order>, IOrderService
@@ -42,6 +44,17 @@ namespace Service.Orders
             }
 
             order.SoftDeleted = true;
+
+            await DbContext.SaveChangesAsync();
+        }
+
+        public async Task OrderSubmit(int id)
+        {
+            var order = DbContext.GetDbSet<Order>().Find(id);
+
+            if (order == null) throw new NotFoundException(nameof(Order), id);
+
+            order.Status = OrderStatus.Submitted;
 
             await DbContext.SaveChangesAsync();
         }

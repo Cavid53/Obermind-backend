@@ -48,5 +48,12 @@ namespace Api.Controllers.v1
             await _service.DeleteOrder(id);
         }
 
+        [HttpGet]
+        [Route("Submit/{id}")]
+        public async Task OrderSubmit([FromRoute][Required] int id)
+        {
+            await _service.OrderSubmit(id);
+        }
+
     }
 }
