@@ -24,7 +24,7 @@ namespace Api.Controllers.v1
         [Route("all")]
         public async Task<IEnumerable<OrderResource>> GetAll()
         {
-            return await _service.GetAll();
+            return await _service.GetAllByUserId();
         }
 
         [HttpGet]

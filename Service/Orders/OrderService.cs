@@ -1,9 +1,12 @@
 ﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Domain.Common;
 using Domain.Entities;
 using Domain.Enums;
+using Microsoft.EntityFrameworkCore;
 using Service.Common;
 using Service.Common.Exceptions;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -13,17 +16,21 @@ namespace Service.Orders
     {
         Task DeleteOrder(int id);
         Task OrderSubmit(int id);
+        Task<IEnumerable<OrderResource>> GetAllByUserId();
+
     }
 
     public class OrderService : CrudService<OrderResource, Order>, IOrderService
     {
         private IAppDbContext _dbContext;
         private IMapper _mapper;
+        private readonly ICurrentUserService _currentUserService;
 
-        public OrderService(IAppDbContext dbContext, IMapper mapper) : base(dbContext, mapper)
+        public OrderService(IAppDbContext dbContext, IMapper mapper, ICurrentUserService currentUserService) : base(dbContext, mapper)
         {
             _dbContext = dbContext;
             _mapper = mapper;
+            _currentUserService = currentUserService;
         }
 
         //delete order with order details
@@ -46,6 +53,14 @@ namespace Service.Orders
             order.SoftDeleted = true;
 
             await DbContext.SaveChangesAsync();
+        }
+
+        public async Task<IEnumerable<OrderResource>> GetAllByUserId()
+        {
+            return await DbContext.GetDbSet<Order>()
+               .ProjectTo<OrderResource>(Mapper.ConfigurationProvider)
+               .Where(m=>m.CreatedBy == _currentUserService.UserId)
+               .ToListAsync();
         }
 
         public async Task OrderSubmit(int id)

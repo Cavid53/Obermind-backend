@@ -15,6 +15,7 @@ namespace Service.Orders
         public OrderStatus Status { get; set; }
         public float TotalPrice { get; set; }
         public DateTime OrderDate { get; set; }
+        public string CreatedBy { get; set; }
 
         public void Mapping(Profile profile)
         {
